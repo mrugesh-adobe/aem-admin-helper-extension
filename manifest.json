@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "AEM Admin Helper",
+  "description": "Quick access to AEM Admin API endpoints from .aem.page or .aem.live sites",
+  "version": "1.0",
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": [
+    "*://*.aem.page/*",
+    "*://*.aem.live/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/icon48.png"
+    }
+  },
+  "icons": {
+    "128": "icons/icon128.png"
+  }
+}
