@@ -1,17 +1,47 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size: 14px;
-  padding: 10px;
+  padding: 0px;
   width: 350px;
+  background: #f4f6f8;
+  color: #2c3e50;
+}
+
+.container {
+  max-width: 100%;
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: none;
 }
 
 h1 {
-  font-size: 18px;
-  margin-bottom: 10px;
+  font-size: 20px;
+  text-align: center;
+  margin: 8px 0 6px;
+  color: #34495e;
+}
+
+.context-info {
+  text-align: center;
+  font-size: 12px;
+  color: #7f8c8d;
+  margin-bottom: 12px;
+  background: #ecf0f1;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .section {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
+}
+
+.section h2 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #dcdde1;
+  padding-bottom: 3px;
+  color: #2d3436;
 }
 
 .links {
@@ -20,36 +50,38 @@ h1 {
   gap: 6px;
 }
 
-a.api-link {
-  text-decoration: none;
-  background: #eef;
-  border-radius: 4px;
-  padding: 5px 10px;
-  color: #333;
+.api-link {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  background: #f9f9f9;
+  padding: 8px 10px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
 }
 
-a.api-link:hover {
-  background-color: #dde;
+.api-link:hover {
+  background: #e4edff;
 }
 
-.context-info {
-  font-style: italic;
-  margin-bottom: 10px;
-  color: #555;
+.api-link a {
+  text-decoration: none;
+  color: #2d3436;
+  font-weight: 500;
+  font-size: 14px;
 }
 
-button {
-  padding: 4px 8px;
+.api-link button {
+  background-color: #3498db;
+  color: #ffffff;
   border: none;
-  background-color: #ccc;
+  padding: 4px 8px;
   border-radius: 4px;
-  cursor: pointer;
   font-size: 12px;
+  cursor: pointer;
+  margin-left: auto;
+  transition: background-color 0.2s ease;
 }
 
-button:hover {
-  background-color: #bbb;
+.api-link button:hover {
+  background-color: #2980b9;
 }
