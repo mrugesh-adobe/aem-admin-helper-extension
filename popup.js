@@ -4,7 +4,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Extract org, site, ref from subdomain
   const [ref, site, org] = url.hostname.split('.')[0].split('--');
-  const path = url.pathname;
+  // remove first / from pathname
+  const path = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
 
   const contextInfo = `${org} / ${site} / ${ref}`;
   document.getElementById('context').textContent = contextInfo;
@@ -23,9 +24,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   ];
 
   const configApis = [
-    { label: '🏢 Org Config', path: `/config/${org}.json` },
-    { label: '🗂 Site Config', path: `/config/${org}/sites/${site}.json` },
-    { label: '🧩 Query Config', path: `/config/${org}/sites/${site}/content/query.yaml` },
+    { label: '🏢 Org', path: `/config/${org}.json` },
+    { label: '🗂 Site', path: `/config/${org}/sites/${site}.json` },
+    { label: '🧩 Query', path: `/config/${org}/sites/${site}/content/query.yaml` },
   ];
 
   const seoApis = [
