@@ -6,31 +6,31 @@ document.addEventListener('DOMContentLoaded', async () => {
   const [ref, site, org] = url.hostname.split('.')[0].split('--');
   const path = url.pathname;
 
-  const contextInfo = `${org} / ${site} / ${ref}\nPath: ${path}`;
+  const contextInfo = `${org} / ${site} / ${ref}`;
   document.getElementById('context').textContent = contextInfo;
+  document.getElementById('path').textContent = path;
 
-  const baseUrl = `${url.protocol}//${url.hostname}`;
+  const baseUrl = `https://admin.hlx.page`;
 
   // Define your API endpoints
   const contentApis = [
-    { label: '📘 Status', path: `${path}.status.json` },
-    { label: '🟢 Preview', path: `${path}.preview.json` },
-    { label: '🔵 Live', path: `${path}.live.json` },
-    { label: '🧾 Code', path: `${path}.code.json` },
-    { label: '📊 Index', path: `${path}.index.json` },
-    { label: '📜 Logs', path: `${path}.logs.json` }
+    { label: '📘 Status', path: `/status/${org}/${site}/${ref}/${path}` },
+    { label: '🟢 Preview', path: `/preview/${org}/${site}/${ref}/${path}` },
+    { label: '🔵 Live', path: `/live/${org}/${site}/${ref}/${path}` },
+    { label: '🧾 Code', path: `/code/${org}/${site}/${ref}/${path}` },
+    { label: '📊 Index', path: `/index/${org}/${site}/${ref}/${path}` },
+    { label: '📜 Logs', path: `/log/${org}/${site}/${ref}` }
   ];
 
   const configApis = [
-    { label: '🗂 Site Config', path: `/conf/${site}/settings/site-config.json` },
-    { label: '🧩 Query Config', path: `/conf/${site}/settings/query-config.json` },
-    { label: '🌐 Sitemap Config', path: `/conf/${site}/settings/sitemap-config.json` },
-    { label: '🏢 Org Config', path: `/conf/${site}/settings/org-config.json` }
+    { label: '🏢 Org Config', path: `/config/${org}.json` },
+    { label: '🗂 Site Config', path: `/config/${org}/sites/${site}.json` },
+    { label: '🧩 Query Config', path: `/config/${org}/sites/${site}/content/query.yaml` },
   ];
 
   const seoApis = [
-    { label: '🤖 Robots.txt', path: `/robots.txt` },
-    { label: '🗺 Sitemap', path: `/sitemap.xml` }
+    { label: '🤖 Robots.txt', path: `/config/${org}/sites/${site}/robots.txt` },
+    { label: '🗺 Sitemap', path: `/config/${org}/sites/${site}/content/sitemap.yaml` }
   ];
 
   // Render all sections
