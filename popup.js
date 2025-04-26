@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   // remove first / from pathname
   const path = url.pathname.startsWith('/') ? url.pathname.slice(1) : url.pathname;
 
+  if (!org || !site) {
+    showNotAemMessage();
+    return;
+  }
+
   const contextInfo = `${org} / ${site} / ${ref}`;
   document.getElementById('context').textContent = contextInfo;
   document.getElementById('path').textContent = path;
@@ -27,6 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     { label: '🏢 Org', path: `/config/${org}.json` },
     { label: '🧩 Query', path: `/config/${org}/sites/${site}/content/query.yaml` },
     { label: '🗂 Site', path: `/config/${org}/sites/${site}.json` },
+    { label: '🏛️ Public', path: `/config/${org}/sites/${site}/public.json` },
   ];
 
   const seoApis = [
@@ -68,4 +74,14 @@ function renderLinks(apiList, containerId, baseUrl) {
     linkWrapper.appendChild(copyBtn);
     container.appendChild(linkWrapper);
   });
+}
+
+// Show message if not AEM EDS
+function showNotAemMessage() {
+  const container = document.querySelector('.container');
+  container.innerHTML = `
+    <div style="padding: 20px; text-align: center; color: #7f8c8d;">
+      <p style="font-size: 14px; margin: 0;">This page doesn't look like an AEM(EDS) site.</p>
+    </div>
+  `;
 }
