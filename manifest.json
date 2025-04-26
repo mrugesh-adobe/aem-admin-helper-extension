@@ -3,10 +3,11 @@
   "name": "AEM Admin Helper",
   "description": "Quick access to AEM Admin API endpoints from .aem.page or .aem.live sites",
   "version": "1.0",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "cookies", "storage"],
   "host_permissions": [
     "*://*.aem.page/*",
-    "*://*.aem.live/*"
+    "*://*.aem.live/*",
+    "https://admin.hlx.page/*"
   ],
   "action": {
     "default_popup": "popup.html",
