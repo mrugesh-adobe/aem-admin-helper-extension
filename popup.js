@@ -16,17 +16,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Define your API endpoints
   const contentApis = [
     { label: '📘 Status', path: `/status/${org}/${site}/${ref}/${path}` },
-    { label: '🟢 Preview', path: `/preview/${org}/${site}/${ref}/${path}` },
-    { label: '🔵 Live', path: `/live/${org}/${site}/${ref}/${path}` },
-    { label: '🧾 Code', path: `/code/${org}/${site}/${ref}/${path}` },
     { label: '📊 Index', path: `/index/${org}/${site}/${ref}/${path}` },
+    { label: '🟢 Preview', path: `/preview/${org}/${site}/${ref}/${path}` },
+    { label: '🧾 Code', path: `/code/${org}/${site}/${ref}/${path}` },
+    { label: '🔵 Live', path: `/live/${org}/${site}/${ref}/${path}` },
     { label: '📜 Logs', path: `/log/${org}/${site}/${ref}` }
   ];
 
   const configApis = [
     { label: '🏢 Org', path: `/config/${org}.json` },
-    { label: '🗂 Site', path: `/config/${org}/sites/${site}.json` },
     { label: '🧩 Query', path: `/config/${org}/sites/${site}/content/query.yaml` },
+    { label: '🗂 Site', path: `/config/${org}/sites/${site}.json` },
   ];
 
   const seoApis = [
