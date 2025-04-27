@@ -36,17 +36,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     { label: '🧩 Query', path: `/config/${org}/sites/${site}/content/query.yaml` },
     { label: '🗂 Site', path: `/config/${org}/sites/${site}.json` },
     { label: '🏛️ Public', path: `/config/${org}/sites/${site}/public.json` },
-  ];
-
-  const seoApis = [
     { label: '🤖 Robots.txt', path: `/config/${org}/sites/${site}/robots.txt` },
     { label: '🗺 Sitemap', path: `/config/${org}/sites/${site}/content/sitemap.yaml` }
   ];
 
   // Render all sections
   renderLinks(contentApis, 'content-links', baseUrl);
-  renderLinks(configApis, 'config-links', baseUrl);
-  renderLinks(seoApis, 'seo-links', baseUrl);
+
+  // Render Config APIs and SEO APIs in separate sections
+  renderLinks(configApis, 'config-links', baseUrl); // Use a container specific to config APIs
 });
 
 // Fetch the lastModified value from the Status API with the necessary cookie
@@ -81,10 +79,17 @@ async function fetchLastModifiedWithCookie(apiUrl) {
         .then((data) => {
           const previewLastModified = data.preview?.lastModified || 'N/A';
           const liveLastModified = data.live?.lastModified || 'N/A';
+          const publishBy = data.profile?.email.split('@')[0] || 'N/A';
+
+          const sourceLocation = data.live?.sourceLocation || '';
+          const { sitesUrl, assetsUrl } = buildAuthorUrls(sourceLocation);
+
+          console.log('Sites URL:', sitesUrl);
+          console.log('Assets URL:', assetsUrl);
 
           // Only display the Publishing Status section if data is valid
-          if (previewLastModified !== 'N/A' || liveLastModified !== 'N/A') {
-            displayPublishingStatus(previewLastModified, liveLastModified);
+          if (previewLastModified !== 'N/A' || liveLastModified !== 'N/A' || publishBy !== 'N/A') {
+            displayPublishingStatus(previewLastModified, liveLastModified, publishBy, sitesUrl, assetsUrl);
           }
         })
         .catch((error) => {
@@ -96,16 +101,52 @@ async function fetchLastModifiedWithCookie(apiUrl) {
   }
 }
 
-function displayPublishingStatus(previewLastModified, liveLastModified) {
+function buildAuthorUrls(sourceLocation) {
+  if (!sourceLocation) {
+    return { sitesUrl: '', assetsUrl: '' };
+  }
+
+  const match = sourceLocation.match(/markup:(https:\/\/[^/]+)/);
+  if (!match || !match[1]) {
+    return { sitesUrl: '', assetsUrl: '' };
+  }
+
+  const authorDomain = match[1];
+  return {
+    sitesUrl: `${authorDomain}/sites.html/content`,
+    assetsUrl: `${authorDomain}/assets.html/content/dam`
+  };
+}
+
+function displayPublishingStatus(previewLastModified, liveLastModified, publishBy, sitesUrl, assetsUrl) {
   const publishingStatusSection = document.querySelector('.publishing-status');
+  const publishByElement = document.querySelector('.publishing-status h2 span');
+  if (publishByElement) {
+    publishByElement.textContent = ` : ${publishBy}`;
+  }
   publishingStatusSection.style.display = 'block'; // Make the section visible
 
   const previewTimeElement = document.getElementById('preview-time');
   const liveTimeElement = document.getElementById('live-time');
 
   // Update the preview and live time elements
-  previewTimeElement.textContent = `📅 Preview: ${formatLastModified(previewLastModified)}`;
-  liveTimeElement.textContent = `📅 Live live: ${formatLastModified(liveLastModified)}`;
+  if (previewTimeElement) {
+    previewTimeElement.textContent = `📅 Preview: ${formatLastModified(previewLastModified)}`;
+  }
+  if (liveTimeElement) {
+    liveTimeElement.textContent = `📅 Live: ${formatLastModified(liveLastModified)}`;
+  }
+
+  // Update the Authoring Links section
+  const sitesUrlElement = document.getElementById('sites-url');
+  const assetsUrlElement = document.getElementById('assets-url');
+
+  if (sitesUrlElement) {
+    sitesUrlElement.innerHTML = `<a href="${sitesUrl}" target="_blank">🌐 Sites</a>`;
+  }
+  if (assetsUrlElement) {
+    assetsUrlElement.innerHTML = `<a href="${assetsUrl}" target="_blank">🖼️ Assets</a>`;
+  }
 }
 
 function formatLastModified(lastModifiedString) {
@@ -163,17 +204,7 @@ function renderLinks(apiList, containerId, baseUrl) {
     openLink.target = '_blank';
     openLink.textContent = api.label;
 
-    const copyBtn = document.createElement('button');
-    copyBtn.textContent = 'Copy';
-    copyBtn.style.marginLeft = 'auto';
-    copyBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(fullUrl);
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => (copyBtn.textContent = 'Copy'), 1500);
-    });
-
     linkWrapper.appendChild(openLink);
-    linkWrapper.appendChild(copyBtn);
     container.appendChild(linkWrapper);
   });
 }

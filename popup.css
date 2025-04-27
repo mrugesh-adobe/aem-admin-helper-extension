@@ -15,11 +15,29 @@ body {
   box-shadow: none;
 }
 
-h1 {
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.header h1 {
   font-size: 16px;
-  text-align: center;
-  margin: 0 8px 8px 6px;
+  margin: 0;
   color: #34495e;
+}
+
+.login-link {
+  font-size: 14px;
+  color: #3498db;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.login-link:hover {
+  color: #2980b9;
 }
 
 .context-info {
@@ -45,15 +63,14 @@ h1 {
 }
 .links {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); /* Responsive 3-column layout */
+  gap: 12px; /* Adjust spacing between items */
+  align-items: start; /* Align items at the start */
 }
 
 .api-link {
-  display: flex;
-  align-items: center;
+  display: block; /* Ensure links take full width */
   background: #f9f9f9;
-  padding: 6px 8px;
   border-radius: 6px;
   transition: background 0.2s ease;
 }
@@ -68,6 +85,8 @@ h1 {
   font-weight: 500;
   font-size: 13px;
   flex-grow: 1;
+  padding: 8px;
+  display: block;
 }
 
 .api-link button {
@@ -116,4 +135,21 @@ h1 {
   border-radius: 6px;
   font-size: 12px;
   color: #2c3e50;
+}
+.authoring-links {
+  margin-top: 20px;
+}
+
+.authoring-links h2 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.authoring-links .links div {
+  margin-bottom: 5px;
+}
+
+.authoring-links .links a {
+  text-decoration: none;
+  color: #3498db;
 }
