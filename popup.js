@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     { label: '🧩 Query', path: `/config/${org}/sites/${site}/content/query.yaml` },
     { label: '🗂 Site', path: `/config/${org}/sites/${site}.json` },
     { label: '🏛️ Public', path: `/config/${org}/sites/${site}/public.json` },
-    { label: '🤖 Robots.txt', path: `/config/${org}/sites/${site}/robots.txt` },
+    { label: '🤖 Robots', path: `/config/${org}/sites/${site}/robots.txt` },
     { label: '🗺 Sitemap', path: `/config/${org}/sites/${site}/content/sitemap.yaml` }
   ];
 
@@ -82,14 +82,11 @@ async function fetchLastModifiedWithCookie(apiUrl) {
           const publishBy = data.profile?.email.split('@')[0] || 'N/A';
 
           const sourceLocation = data.live?.sourceLocation || '';
-          const { sitesUrl, assetsUrl } = buildAuthorUrls(sourceLocation);
-
-          console.log('Sites URL:', sitesUrl);
-          console.log('Assets URL:', assetsUrl);
+          const { sitesUrl, assetsUrl, configURL, packmgrUrl } = buildAuthorUrls(sourceLocation);
 
           // Only display the Publishing Status section if data is valid
           if (previewLastModified !== 'N/A' || liveLastModified !== 'N/A' || publishBy !== 'N/A') {
-            displayPublishingStatus(previewLastModified, liveLastModified, publishBy, sitesUrl, assetsUrl);
+            displayPublishingStatus(previewLastModified, liveLastModified, publishBy, sitesUrl, assetsUrl, configURL, packmgrUrl);
           }
         })
         .catch((error) => {
@@ -114,11 +111,13 @@ function buildAuthorUrls(sourceLocation) {
   const authorDomain = match[1];
   return {
     sitesUrl: `${authorDomain}/sites.html/content`,
-    assetsUrl: `${authorDomain}/assets.html/content/dam`
+    assetsUrl: `${authorDomain}/assets.html/content/dam`,
+    packmgrUrl: `${authorDomain}/crx/packmgr/index.jsp`,
+    configURL: `${authorDomain}/ui#/aem/libs/core/franklin/shell/content/configuration.html/conf`,
   };
 }
 
-function displayPublishingStatus(previewLastModified, liveLastModified, publishBy, sitesUrl, assetsUrl) {
+function displayPublishingStatus(previewLastModified, liveLastModified, publishBy, sitesUrl, assetsUrl, configURL, packmgrUrl) {
   const publishingStatusSection = document.querySelector('.publishing-status');
   const authorLinksSection = document.querySelector('.authoring-links');
   const publishByElement = document.querySelector('.publishing-status h2 span');
@@ -142,12 +141,20 @@ function displayPublishingStatus(previewLastModified, liveLastModified, publishB
   // Update the Authoring Links section
   const sitesUrlElement = document.getElementById('sites-url');
   const assetsUrlElement = document.getElementById('assets-url');
+  const configUrlElement = document.getElementById('config-url');
+  const packmgrUrlElement = document.getElementById('packmgr-url');
 
   if (sitesUrlElement) {
     sitesUrlElement.innerHTML = `<a href="${sitesUrl}" target="_blank">🌐 Sites</a>`;
   }
   if (assetsUrlElement) {
     assetsUrlElement.innerHTML = `<a href="${assetsUrl}" target="_blank">🖼️ Assets</a>`;
+  }
+  if (configUrlElement) {
+    configUrlElement.innerHTML = `<a href="${configURL}" target="_blank">⚙️ Config</a>`;
+  }
+  if (packmgrUrlElement) {
+    packmgrUrlElement.innerHTML = `<a href="${packmgrUrl}" target="_blank">📦 PackMgr</a>`;
   }
 }
 
