@@ -120,11 +120,13 @@ function buildAuthorUrls(sourceLocation) {
 
 function displayPublishingStatus(previewLastModified, liveLastModified, publishBy, sitesUrl, assetsUrl) {
   const publishingStatusSection = document.querySelector('.publishing-status');
+  const authorLinksSection = document.querySelector('.authoring-links');
   const publishByElement = document.querySelector('.publishing-status h2 span');
   if (publishByElement) {
     publishByElement.textContent = ` : ${publishBy}`;
   }
   publishingStatusSection.style.display = 'block'; // Make the section visible
+  authorLinksSection.style.display = 'block'; // Make the section visible
 
   const previewTimeElement = document.getElementById('preview-time');
   const liveTimeElement = document.getElementById('live-time');
