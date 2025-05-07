@@ -19,7 +19,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Fetch and display the lastModified value
   const statusApiUrl = `${baseUrl}/status/${org}/${site}/${ref}/${path}`;
-  fetchLastModifiedWithCookie(statusApiUrl);
+  const cacheKey = `sourceLocation_${org}_${site}_${ref}`;
+  fetchLastModifiedWithCookie(statusApiUrl, cacheKey);
 
   // Define your API endpoints
   const contentApis = [
@@ -48,9 +49,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // Fetch the lastModified value from the Status API with the necessary cookie
-async function fetchLastModifiedWithCookie(apiUrl) {
+async function fetchLastModifiedWithCookie(apiUrl, cacheKey) {
   try {
-    // Append the required query parameter
+    // First check if we have cached sourceLocation
+    const cachedData = await chrome.storage.local.get(cacheKey);
+    if (cachedData[cacheKey]) {
+      const { sourceLocation, timestamp } = cachedData[cacheKey];
+      
+      // Check if cache is less than 24 hours old
+      const now = Date.now();
+      const cacheAge = now - timestamp;
+      const cacheValidHours = 24;
+      
+      if (cacheAge < cacheValidHours * 60 * 60 * 1000) {
+        const { sitesUrl, assetsUrl, configURL, packmgrUrl } = buildAuthorUrls(sourceLocation);
+        if (sitesUrl && assetsUrl) {
+          displayAuthoringLinks(sitesUrl, assetsUrl, configURL, packmgrUrl);
+          return;
+        }
+      }
+    }
+
+    // If no valid cache found, proceed with API call
     const apiUrlWithQuery = `${apiUrl}?edit=auto`;
 
     // Get the cookie for the domain
@@ -82,11 +102,23 @@ async function fetchLastModifiedWithCookie(apiUrl) {
           const publishBy = data.profile?.email.split('@')[0] || 'N/A';
 
           const sourceLocation = data.live?.sourceLocation || '';
+          
+          // Cache the sourceLocation if it exists
+          if (sourceLocation) {
+            chrome.storage.local.set({
+              [cacheKey]: {
+                sourceLocation,
+                timestamp: Date.now()
+              }
+            });
+          }
+          
           const { sitesUrl, assetsUrl, configURL, packmgrUrl } = buildAuthorUrls(sourceLocation);
 
           // Only display the Publishing Status section if data is valid
           if (previewLastModified !== 'N/A' || liveLastModified !== 'N/A' || publishBy !== 'N/A') {
-            displayPublishingStatus(previewLastModified, liveLastModified, publishBy, sitesUrl, assetsUrl, configURL, packmgrUrl);
+            displayPublishingStatus(previewLastModified, liveLastModified, publishBy);
+            displayAuthoringLinks(sitesUrl, assetsUrl, configURL, packmgrUrl);
           }
         })
         .catch((error) => {
@@ -117,26 +149,9 @@ function buildAuthorUrls(sourceLocation) {
   };
 }
 
-function displayPublishingStatus(previewLastModified, liveLastModified, publishBy, sitesUrl, assetsUrl, configURL, packmgrUrl) {
-  const publishingStatusSection = document.querySelector('.publishing-status');
+function displayAuthoringLinks(sitesUrl, assetsUrl, configURL, packmgrUrl) {
   const authorLinksSection = document.querySelector('.authoring-links');
-  const publishByElement = document.querySelector('.publishing-status h2 span');
-  if (publishByElement) {
-    publishByElement.textContent = ` : ${publishBy}`;
-  }
-  publishingStatusSection.style.display = 'block'; // Make the section visible
   authorLinksSection.style.display = 'block'; // Make the section visible
-
-  const previewTimeElement = document.getElementById('preview-time');
-  const liveTimeElement = document.getElementById('live-time');
-
-  // Update the preview and live time elements
-  if (previewTimeElement) {
-    previewTimeElement.textContent = `📅 Preview: ${formatLastModified(previewLastModified)}`;
-  }
-  if (liveTimeElement) {
-    liveTimeElement.textContent = `📅 Live: ${formatLastModified(liveLastModified)}`;
-  }
 
   // Update the Authoring Links section
   const sitesUrlElement = document.getElementById('sites-url');
@@ -155,6 +170,26 @@ function displayPublishingStatus(previewLastModified, liveLastModified, publishB
   }
   if (packmgrUrlElement) {
     packmgrUrlElement.innerHTML = `<a href="${packmgrUrl}" target="_blank">📦 PackMgr</a>`;
+  }
+}
+
+function displayPublishingStatus(previewLastModified, liveLastModified, publishBy) {
+  const publishingStatusSection = document.querySelector('.publishing-status');
+  const publishByElement = document.querySelector('.publishing-status h2 span');
+  if (publishByElement) {
+    publishByElement.textContent = ` : ${publishBy}`;
+  }
+  publishingStatusSection.style.display = 'block'; // Make the section visible
+
+  const previewTimeElement = document.getElementById('preview-time');
+  const liveTimeElement = document.getElementById('live-time');
+
+  // Update the preview and live time elements
+  if (previewTimeElement) {
+    previewTimeElement.textContent = `📅 Preview: ${formatLastModified(previewLastModified)}`;
+  }
+  if (liveTimeElement) {
+    liveTimeElement.textContent = `📅 Live: ${formatLastModified(liveLastModified)}`;
   }
 }
 
