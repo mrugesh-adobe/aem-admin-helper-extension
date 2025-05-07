@@ -46,7 +46,7 @@ body {
   color: #7f8c8d;
   margin-bottom: 12px;
   background: #ecf0f1;
-  padding: 4px 8px;
+  padding: 4px 5px;
   border-radius: 6px;
 }
 
@@ -55,7 +55,7 @@ body {
 }
 
 .section h2 {
-  font-size: 14px;
+  font-size: 13px;
   margin-bottom: 8px;
   border-bottom: 1px solid #dcdde1;
   padding-bottom: 3px;
@@ -85,7 +85,7 @@ body {
   font-weight: 500;
   font-size: 13px;
   flex-grow: 1;
-  padding: 8px;
+  padding: 5px;
   display: block;
 }
 
@@ -116,7 +116,7 @@ body {
 }
 
 .publishing-status h2 {
-  font-size: 14px;
+  font-size: 13px;
   margin-bottom: 8px;
   color: #2d3436;
   text-align: center;
@@ -143,7 +143,7 @@ body {
 }
 
 .authoring-links h2 {
-  font-size: 16px;
+  font-size: 13px;
   margin-bottom: 10px;
 }
 
@@ -154,4 +154,38 @@ body {
 .authoring-links .links a {
   text-decoration: none;
   color: #3498db;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#index-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-family: sans-serif;
+  font-size: 12px;
+  background: #f9f9f9;
+  padding: 5px;
+  border-radius: 8px;
+}
+
+#index-links a {
+  background-color: #eef2f7;
+  padding: 4px 5px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: #2d3e50;
+  transition: background 0.2s, color 0.2s;
+  flex: 1 1 auto;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#index-links a:hover {
+  background-color: #d0e3ff;
+  color: #003366;
 }

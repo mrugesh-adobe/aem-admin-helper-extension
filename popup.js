@@ -38,8 +38,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     { label: '🟢 Preview', path: `/preview/${org}/${site}/${ref}/${path}` },
     { label: '🔵 Live', path: `/live/${org}/${site}/${ref}/${path}` },
     { label: '📊 Index', path: `/index/${org}/${site}/${ref}/${path}` },
-    { label: '🧾 Code', path: `/code/${org}/${site}/${ref}/${path}` },
-    { label: '📜 Logs', path: `/log/${org}/${site}/${ref}` }
   ];
 
   const configApis = [
@@ -51,11 +49,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     { label: '🗺 Sitemap', path: `/config/${org}/sites/${site}/content/sitemap.yaml` }
   ];
 
+  const indexLinks = [
+    { label: 'query', path: `/query-index.json` },
+    { label: 'offers', path: `/offers-index.json` },
+    { label: 'faq', path: `/faq-index.json` },
+    { label: 'employers', path: `/employers-faq-index.json` },
+    { label: 'marketplace', path: `/marketplace-query-index.json` },
+    { label: 'benefits', path: `/benefits-index.json` },
+    { label: 'car-brand', path: `/car-brand-index.json` },
+    { label: 'resource-hub', path: `/employers-resources-hub-index.json` },
+    { label: 'news', path: `/news-index.json` },
+    { label: 'anouncement', path: `/announcement-index.json` }
+  ];
+
   // Render all sections
   renderLinks(contentApis, 'content-links', baseUrl);
 
   // Render Config APIs and SEO APIs in separate sections
   renderLinks(configApis, 'config-links', baseUrl); // Use a container specific to config APIs
+
+  // Render all sections
+  renderNormalLinks(indexLinks, 'index-links', urlWithoutPath);
 });
 
 // Fetch the lastModified value from the Status API with the necessary cookie
@@ -266,6 +280,22 @@ function renderLinks(apiList, containerId, baseUrl) {
 
     linkWrapper.appendChild(openLink);
     container.appendChild(linkWrapper);
+  });
+}
+
+// 🔗 Helper to render links
+function renderNormalLinks(apiList, containerId, baseUrl) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = ''; // Clear existing content
+  apiList.forEach(api => {
+    const fullUrl = baseUrl + api.path;
+
+    const openLink = document.createElement('a');
+    openLink.href = fullUrl;
+    openLink.target = '_blank';
+    openLink.textContent = api.label;
+
+    container.appendChild(openLink);
   });
 }
 
