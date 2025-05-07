@@ -7,8 +7,13 @@
   "host_permissions": [
     "*://*.aem.page/*",
     "*://*.aem.live/*",
-    "https://admin.hlx.page/*"
+    "https://admin.hlx.page/*",
+    "https://*.maxxia.com.au/*"
   ],
+  "web_accessible_resources": [{
+    "resources": ["url-mapping.js"],
+    "matches": ["<all_urls>"]
+  }],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {

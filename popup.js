@@ -1,6 +1,14 @@
+import { fixedUrlMappings } from './url-mapping.js';
+
 document.addEventListener('DOMContentLoaded', async () => {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  const url = new URL(tab.url);
+  let url = new URL(tab.url);
+
+  // Check if the URL matches any fixed mappings
+  const urlWithoutPath = `${url.protocol}//${url.hostname}`;
+  if (fixedUrlMappings[urlWithoutPath]) {
+    url = new URL(fixedUrlMappings[urlWithoutPath] + url.pathname + url.search + url.hash);
+  }
 
   // Extract org, site, ref from subdomain
   const [ref, site, org] = url.hostname.split('.')[0].split('--');
@@ -20,6 +28,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Fetch and display the lastModified value
   const statusApiUrl = `${baseUrl}/status/${org}/${site}/${ref}/${path}`;
   const cacheKey = `sourceLocation_${org}_${site}_${ref}`;
+  // Show publishing status section immediately with N/A values
+  displayPublishingStatus('Loading...', 'Loading...', 'Loading...');
   fetchLastModifiedWithCookie(statusApiUrl, cacheKey);
 
   // Define your API endpoints
@@ -34,9 +44,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const configApis = [
     { label: '🏢 Org', path: `/config/${org}.json` },
-    { label: '🧩 Query', path: `/config/${org}/sites/${site}/content/query.yaml` },
     { label: '🗂 Site', path: `/config/${org}/sites/${site}.json` },
     { label: '🏛️ Public', path: `/config/${org}/sites/${site}/public.json` },
+    { label: '🧩 Query', path: `/config/${org}/sites/${site}/content/query.yaml` },
     { label: '🤖 Robots', path: `/config/${org}/sites/${site}/robots.txt` },
     { label: '🗺 Sitemap', path: `/config/${org}/sites/${site}/content/sitemap.yaml` }
   ];
@@ -53,6 +63,7 @@ async function fetchLastModifiedWithCookie(apiUrl, cacheKey) {
   try {
     // First check if we have cached sourceLocation
     const cachedData = await chrome.storage.local.get(cacheKey);
+    let cachedSourceLocation = '';
     if (cachedData[cacheKey]) {
       const { sourceLocation, timestamp } = cachedData[cacheKey];
       
@@ -63,9 +74,8 @@ async function fetchLastModifiedWithCookie(apiUrl, cacheKey) {
       
       if (cacheAge < cacheValidHours * 60 * 60 * 1000) {
         const { sitesUrl, assetsUrl, configURL, packmgrUrl } = buildAuthorUrls(sourceLocation);
-        if (sitesUrl && assetsUrl) {
+        if (sitesUrl) {
           displayAuthoringLinks(sitesUrl, assetsUrl, configURL, packmgrUrl);
-          return;
         }
       }
     }
@@ -77,7 +87,8 @@ async function fetchLastModifiedWithCookie(apiUrl, cacheKey) {
     chrome.cookies.get({ url: 'https://admin.hlx.page', name: 'auth_token' }, (cookie) => {
       if (!cookie || !cookie.value) {
         console.error('Cookie not found');
-        return; // Do not display the Publishing Status section
+        displayPublishingStatus('N/A', 'N/A', 'N/A');
+        return;
       }
 
       const cookieValue = cookie.value;
@@ -103,6 +114,9 @@ async function fetchLastModifiedWithCookie(apiUrl, cacheKey) {
 
           const sourceLocation = data.live?.sourceLocation || '';
           
+          // Use sourceLocation from API or cache
+          const finalSourceLocation = sourceLocation || cachedSourceLocation;
+          
           // Cache the sourceLocation if it exists
           if (sourceLocation) {
             chrome.storage.local.set({
@@ -113,11 +127,13 @@ async function fetchLastModifiedWithCookie(apiUrl, cacheKey) {
             });
           }
           
-          const { sitesUrl, assetsUrl, configURL, packmgrUrl } = buildAuthorUrls(sourceLocation);
+          const { sitesUrl, assetsUrl, configURL, packmgrUrl } = buildAuthorUrls(finalSourceLocation);
 
-          // Only display the Publishing Status section if data is valid
-          if (previewLastModified !== 'N/A' || liveLastModified !== 'N/A' || publishBy !== 'N/A') {
-            displayPublishingStatus(previewLastModified, liveLastModified, publishBy);
+          // Always display publishing status with fresh data
+          displayPublishingStatus(previewLastModified, liveLastModified, publishBy);
+          
+          // Display authoring links if we have valid URLs (from API or cache)
+          if (sitesUrl) {
             displayAuthoringLinks(sitesUrl, assetsUrl, configURL, packmgrUrl);
           }
         })
@@ -194,8 +210,8 @@ function displayPublishingStatus(previewLastModified, liveLastModified, publishB
 }
 
 function formatLastModified(lastModifiedString) {
-  if (lastModifiedString === 'N/A') {
-    return 'N/A';
+  if (lastModifiedString === 'N/A' || lastModifiedString === 'Loading...') {
+    return lastModifiedString;
   }
 
   const date = new Date(lastModifiedString);
