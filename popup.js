@@ -35,10 +35,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Define your API endpoints
   const contentApis = [
     { label: '📘 Status', path: `/status/${org}/${site}/${ref}/${path}` },
-    { label: '📊 Index', path: `/index/${org}/${site}/${ref}/${path}` },
     { label: '🟢 Preview', path: `/preview/${org}/${site}/${ref}/${path}` },
-    { label: '🧾 Code', path: `/code/${org}/${site}/${ref}/${path}` },
     { label: '🔵 Live', path: `/live/${org}/${site}/${ref}/${path}` },
+    { label: '📊 Index', path: `/index/${org}/${site}/${ref}/${path}` },
+    { label: '🧾 Code', path: `/code/${org}/${site}/${ref}/${path}` },
     { label: '📜 Logs', path: `/log/${org}/${site}/${ref}` }
   ];
 
@@ -110,7 +110,7 @@ async function fetchLastModifiedWithCookie(apiUrl, cacheKey) {
         .then((data) => {
           const previewLastModified = data.preview?.lastModified || 'N/A';
           const liveLastModified = data.live?.lastModified || 'N/A';
-          const publishBy = data.profile?.email.split('@')[0] || 'N/A';
+          const publishBy = data.profile?.email || 'N/A';
 
           const sourceLocation = data.live?.sourceLocation || '';
           
@@ -193,7 +193,7 @@ function displayPublishingStatus(previewLastModified, liveLastModified, publishB
   const publishingStatusSection = document.querySelector('.publishing-status');
   const publishByElement = document.querySelector('.publishing-status h2 span');
   if (publishByElement) {
-    publishByElement.textContent = ` : ${publishBy}`;
+    publishByElement.textContent = ` ${publishBy}`;
   }
   publishingStatusSection.style.display = 'block'; // Make the section visible
 
