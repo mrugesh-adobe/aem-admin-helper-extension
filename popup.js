@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const contextInfo = `${org} / ${site} / ${ref}`;
+  const contextInfo = `${ref} / ${site} / ${org}`;
   document.getElementById('context').textContent = contextInfo;
   document.getElementById('path').textContent = path;
 
